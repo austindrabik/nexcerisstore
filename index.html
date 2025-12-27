@@ -14,23 +14,42 @@
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
     <div id="root"></div>
 
     <script type="text/babel">
-        // Paste the CONTENT of OneFile.jsx here, BUT:
-        // 1. Remove the "import" lines at the very top.
-        // 2. Change "export default function" to "function".
-        // 3. Add the render logic at the bottom.
-        
-        // --- I HAVE DONE THIS FOR YOU BELOW ---
-
         const { useState, useEffect, useMemo, useRef } = React;
-        const { ShoppingCart, Search, Menu, X, Filter, ChevronDown, ChevronUp, Check, ArrowRight, ArrowLeft, User } = lucide;
+
+        // --- Icons (Manually defined to avoid external dependency issues) ---
+        const IconWrapper = ({ children, className, ...props }) => (
+            <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="24" height="24" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                className={className} 
+                {...props}
+            >
+                {children}
+            </svg>
+        );
+
+        const ShoppingCart = (props) => <IconWrapper {...props}><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></IconWrapper>;
+        const Search = (props) => <IconWrapper {...props}><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></IconWrapper>;
+        const Menu = (props) => <IconWrapper {...props}><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></IconWrapper>;
+        const X = (props) => <IconWrapper {...props}><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></IconWrapper>;
+        const Filter = (props) => <IconWrapper {...props}><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></IconWrapper>;
+        const ChevronDown = (props) => <IconWrapper {...props}><polyline points="6 9 12 15 18 9"></polyline></IconWrapper>;
+        const ChevronUp = (props) => <IconWrapper {...props}><polyline points="18 15 12 9 6 15"></polyline></IconWrapper>;
+        const Check = (props) => <IconWrapper {...props}><polyline points="20 6 9 17 4 12"></polyline></IconWrapper>;
+        const ArrowRight = (props) => <IconWrapper {...props}><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></IconWrapper>;
+        const ArrowLeft = (props) => <IconWrapper {...props}><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></IconWrapper>;
+        const User = (props) => <IconWrapper {...props}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></IconWrapper>;
 
         // --- Utility Components ---
         const Button = ({ children, onClick, variant = 'primary', className = '', ...props }) => {
@@ -102,25 +121,3279 @@
             { title: "Advanced Materials", items: ["Ion-Exchange Membrane", "Thermo-Electric Materials"] }
         ];
 
-        // *** PASTE THE FULL SAMPLE_DATA HERE FROM THE PREVIOUS RESPONSE ***
+        // --- SAMPLE DATA (Full Catalog) ---
         const SAMPLE_DATA = {
             data: [
-                {
-                    "gid": "1211496523293634",
-                    "name": "LNC-Cu Ink Formulation A",
-                    "notes": "High conductivity copper ink suitable for various substrates.",
-                    "custom_fields": [{ "name": "SKU", "display_value": "LNC-CU-001" }, { "name": "Product Type", "display_value": "Electrodes" }, { "name": "Material Type", "display_value": "Electrode" }, { "name": "Applications", "display_value": "Next-Gen Batteries" }, { "name": "Ways to Use", "display_value": "Screen Printing" }],
-                    "tags": []
-                },
-                // ... (I am truncating for brevity, but you should copy the FULL 147 item list from the previous response) ...
-                {
-                    "gid": "1212265003051180",
-                    "name": "Ceramic Adhesive (High Strength)",
-                    "notes": "Structural bonding.",
-                    "custom_fields": [{ "name": "Product Type", "display_value": "Process Accessories" }],
-                    "tags": []
-                }
-            ]
+  {
+    "gid": "1211496523293634",
+    "name": "LNC-Cu Ink Formulation A",
+    "notes": "https://app.asana.com/0/1211024326418386/1211496523293634",
+    "custom_fields": [
+      {
+        "name": "SKU",
+        "display_value": "LNC-CU-001"
+      },
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "Next-Gen Batteries"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      },
+      {
+        "name": "Price",
+        "display_value": "150",
+        "number_value": 150
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1211496523293639",
+    "name": "Standard SOFC Stack (1kW)",
+    "notes": "https://app.asana.com/0/1211024326418386/1211496523293639",
+    "custom_fields": [
+      {
+        "name": "SKU",
+        "display_value": "SOFC-1KW"
+      },
+      {
+        "name": "Product Type",
+        "display_value": "Cells"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrolyte"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Combustion"
+      },
+      {
+        "name": "Price",
+        "display_value": "2500",
+        "number_value": 2500
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1211496523293644",
+    "name": "YSZ Electrolyte Sheet (10x10cm)",
+    "notes": "https://app.asana.com/0/1211024326418386/1211496523293644",
+    "custom_fields": [
+      {
+        "name": "SKU",
+        "display_value": "YSZ-SHEET-10"
+      },
+      {
+        "name": "Product Type",
+        "display_value": "Electrolytes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrolyte"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Tape Casting"
+      },
+      {
+        "name": "Price",
+        "display_value": "75.5",
+        "number_value": 75.5
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1211496523293649",
+    "name": "LSM Cathode Paste",
+    "notes": "https://app.asana.com/0/1211024326418386/1211496523293649",
+    "custom_fields": [
+      {
+        "name": "SKU",
+        "display_value": "LSM-PASTE-01"
+      },
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      },
+      {
+        "name": "Price",
+        "display_value": "200",
+        "number_value": 200
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1211496523293654",
+    "name": "SDC Barrier Layer Powder",
+    "notes": "https://app.asana.com/0/1211024326418386/1211496523293654",
+    "custom_fields": [
+      {
+        "name": "SKU",
+        "display_value": "SDC-POW-1KG"
+      },
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Barrier Layer"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOEC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Spraying"
+      },
+      {
+        "name": "Price",
+        "display_value": "120",
+        "number_value": 120
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1211496523293659",
+    "name": "Single Cell Test Fixture",
+    "notes": "https://app.asana.com/0/1211024326418386/1211496523293659",
+    "custom_fields": [
+      {
+        "name": "SKU",
+        "display_value": "TF-PRO-2025"
+      },
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Balance of Stack"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      },
+      {
+        "name": "Price",
+        "display_value": "5000",
+        "number_value": 5000
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1211496523293664",
+    "name": "NiO-YSZ Anode Support",
+    "notes": "https://app.asana.com/0/1211024326418386/1211496523293664",
+    "custom_fields": [
+      {
+        "name": "SKU",
+        "display_value": "NIO-YSZ-PLT"
+      },
+      {
+        "name": "Product Type",
+        "display_value": "Substrates"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "Fuel Synthesis"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Pellets"
+      },
+      {
+        "name": "Price",
+        "display_value": "45",
+        "number_value": 45
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1211496523293669",
+    "name": "LSCF Cathode Ink",
+    "notes": "https://app.asana.com/0/1211024326418386/1211496523293669",
+    "custom_fields": [
+      {
+        "name": "SKU",
+        "display_value": "LSCF-INK-500"
+      },
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      },
+      {
+        "name": "Price",
+        "display_value": "220",
+        "number_value": 220
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1211496523293674",
+    "name": "GDC Electrolyte Powder",
+    "notes": "https://app.asana.com/0/1211024326418386/1211496523293674",
+    "custom_fields": [
+      {
+        "name": "SKU",
+        "display_value": "GDC-POW-1KG"
+      },
+      {
+        "name": "Product Type",
+        "display_value": "Electrolytes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrolyte"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOEC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Tape Casting"
+      },
+      {
+        "name": "Price",
+        "display_value": "180",
+        "number_value": 180
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1211496523293679",
+    "name": "ScSZ Electrolyte Ink",
+    "notes": "https://app.asana.com/0/1211024326418386/1211496523293679",
+    "custom_fields": [
+      {
+        "name": "SKU",
+        "display_value": "SCSZ-INK-100"
+      },
+      {
+        "name": "Product Type",
+        "display_value": "Electrolytes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrolyte"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      },
+      {
+        "name": "Price",
+        "display_value": "300",
+        "number_value": 300
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1211496523293684",
+    "name": "ASC-100 Anode Supported Cell",
+    "notes": "https://app.asana.com/0/1211024326418386/1211496523293684",
+    "custom_fields": [
+      {
+        "name": "SKU",
+        "display_value": "ASC-100-D"
+      },
+      {
+        "name": "Product Type",
+        "display_value": "Cells"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Combustion"
+      },
+      {
+        "name": "Price",
+        "display_value": "55",
+        "number_value": 55
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1211496523293689",
+    "name": "High Temp Gas Seal Kit",
+    "notes": "https://app.asana.com/0/1211024326418386/1211496523293689",
+    "custom_fields": [
+      {
+        "name": "SKU",
+        "display_value": "SEAL-KIT-01"
+      },
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Barrier Layer"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      },
+      {
+        "name": "Price",
+        "display_value": "125",
+        "number_value": 125
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1211496523293694",
+    "name": "Reforming Catalyst Pellets",
+    "notes": "https://app.asana.com/0/1211024326418386/1211496523293694",
+    "custom_fields": [
+      {
+        "name": "SKU",
+        "display_value": "REF-CAT-PEL"
+      },
+      {
+        "name": "Product Type",
+        "display_value": "Catalysts"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "Reforming"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Pellets"
+      },
+      {
+        "name": "Price",
+        "display_value": "95",
+        "number_value": 95
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1211496523293699",
+    "name": "Fuel Synthesis Catalyst",
+    "notes": "https://app.asana.com/0/1211024326418386/1211496523293699",
+    "custom_fields": [
+      {
+        "name": "SKU",
+        "display_value": "FS-CAT-005"
+      },
+      {
+        "name": "Product Type",
+        "display_value": "Catalysts"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "Fuel Synthesis"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Pellets"
+      },
+      {
+        "name": "Price",
+        "display_value": "350",
+        "number_value": 350
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1211496523293704",
+    "name": "Ion-Exchange Polymer Sheet",
+    "notes": "https://app.asana.com/0/1211024326418386/1211496523293704",
+    "custom_fields": [
+      {
+        "name": "SKU",
+        "display_value": "IEM-SHEET-A4"
+      },
+      {
+        "name": "Product Type",
+        "display_value": "Substrates"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrolyte"
+      },
+      {
+        "name": "Applications",
+        "display_value": "Ion-Exchange Membrane"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Tape Casting"
+      },
+      {
+        "name": "Price",
+        "display_value": "85",
+        "number_value": 85
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1211496523293709",
+    "name": "Thermo-Electric Oxide Powder",
+    "notes": "https://app.asana.com/0/1211024326418386/1211496523293709",
+    "custom_fields": [
+      {
+        "name": "SKU",
+        "display_value": "TE-OX-POW"
+      },
+      {
+        "name": "Product Type",
+        "display_value": "Catalysts"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "Thermo-Electric Materials"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Pellets"
+      },
+      {
+        "name": "Price",
+        "display_value": "145",
+        "number_value": 145
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1211496523293714",
+    "name": "PCFC Electrolyte Disc",
+    "notes": "https://app.asana.com/0/1211024326418386/1211496523293714",
+    "custom_fields": [
+      {
+        "name": "SKU",
+        "display_value": "PCFC-DISC-25"
+      },
+      {
+        "name": "Product Type",
+        "display_value": "Electrolytes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrolyte"
+      },
+      {
+        "name": "Applications",
+        "display_value": "PCFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      },
+      {
+        "name": "Price",
+        "display_value": "60",
+        "number_value": 60
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1211496523293719",
+    "name": "Metal-Air Battery Cathode",
+    "notes": "https://app.asana.com/0/1211024326418386/1211496523293719",
+    "custom_fields": [
+      {
+        "name": "SKU",
+        "display_value": "MAB-CAT-01"
+      },
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "Metal-Air Batteries"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      },
+      {
+        "name": "Price",
+        "display_value": "90",
+        "number_value": 90
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051052",
+    "name": "NextGen SOFC Interconnect",
+    "notes": "High conductivity metallic interconnect for stack assembly.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Balance of Stack"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      },
+      {
+        "name": "Price",
+        "display_value": "110",
+        "number_value": 110
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051053",
+    "name": "High Purity Nickel Oxide",
+    "notes": "Precursor for anode cermet production.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Catalysts"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "Reforming"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Tape Casting"
+      },
+      {
+        "name": "Price",
+        "display_value": "75",
+        "number_value": 75
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051054",
+    "name": "Chromium Getter Plate",
+    "notes": "Protective plate to prevent chromium poisoning in SOFC stacks.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Balance of Stack"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Barrier Layer"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      },
+      {
+        "name": "Price",
+        "display_value": "65",
+        "number_value": 65
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051055",
+    "name": "Anode Contact Paste (Ni)",
+    "notes": "Nickel based contact paste for reducing atmosphere sides.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      },
+      {
+        "name": "Price",
+        "display_value": "180",
+        "number_value": 180
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051056",
+    "name": "Cathode Contact Paste (LSM)",
+    "notes": "LSM based contact paste for air side connections.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      },
+      {
+        "name": "Price",
+        "display_value": "160",
+        "number_value": 160
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051057",
+    "name": "Fuel Cell Sealant Glass A",
+    "notes": "High temperature sealing glass for planar stacks.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Balance of Stack"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Barrier Layer"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      },
+      {
+        "name": "Price",
+        "display_value": "95",
+        "number_value": 95
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051058",
+    "name": "Fuel Cell Sealant Glass B",
+    "notes": "Alternative crystallization kinetics sealing glass.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Balance of Stack"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Barrier Layer"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      },
+      {
+        "name": "Price",
+        "display_value": "95",
+        "number_value": 95
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051059",
+    "name": "YSZ-8Y Powder",
+    "notes": "8 mol% Yttria Stabilized Zirconia powder, high surface area.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrolytes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrolyte"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Tape Casting"
+      },
+      {
+        "name": "Price",
+        "display_value": "130",
+        "number_value": 130
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051060",
+    "name": "GDC-10 Powder",
+    "notes": "10% Gadolinium Doped Ceria powder.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrolytes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrolyte"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOEC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Tape Casting"
+      },
+      {
+        "name": "Price",
+        "display_value": "150",
+        "number_value": 150
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051061",
+    "name": "GDC-20 Powder",
+    "notes": "20% Gadolinium Doped Ceria powder.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrolytes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrolyte"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOEC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Tape Casting"
+      },
+      {
+        "name": "Price",
+        "display_value": "155",
+        "number_value": 155
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051062",
+    "name": "SDC-20 Powder",
+    "notes": "20% Samaria Doped Ceria powder.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrolytes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrolyte"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOEC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Tape Casting"
+      },
+      {
+        "name": "Price",
+        "display_value": "160",
+        "number_value": 160
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051063",
+    "name": "LSCF-6428 Powder",
+    "notes": "La0.6Sr0.4Co0.2Fe0.8O3-d powder for cathodes.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      },
+      {
+        "name": "Price",
+        "display_value": "140",
+        "number_value": 140
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051064",
+    "name": "LSM-20 Powder",
+    "notes": "La0.8Sr0.2MnO3-d powder.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      },
+      {
+        "name": "Price",
+        "display_value": "110",
+        "number_value": 110
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051065",
+    "name": "LSM-15 Powder",
+    "notes": "La0.85Sr0.15MnO3-d powder.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      },
+      {
+        "name": "Price",
+        "display_value": "110",
+        "number_value": 110
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051066",
+    "name": "NiO Powder (Black)",
+    "notes": "Black nickel oxide powder, standard grade.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Tape Casting"
+      },
+      {
+        "name": "Price",
+        "display_value": "70",
+        "number_value": 70
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051067",
+    "name": "NiO Powder (Green)",
+    "notes": "Green nickel oxide powder, high purity.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Tape Casting"
+      },
+      {
+        "name": "Price",
+        "display_value": "80",
+        "number_value": 80
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051068",
+    "name": "Button Cell Tester - Basic",
+    "notes": "Entry level button cell testing rig.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      },
+      {
+        "name": "Price",
+        "display_value": "3500",
+        "number_value": 3500
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051069",
+    "name": "Button Cell Tester - Advanced",
+    "notes": "Advanced rig with impedance spectroscopy capabilities.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      },
+      {
+        "name": "Price",
+        "display_value": "8000",
+        "number_value": 8000
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051070",
+    "name": "Stack Compression Rig",
+    "notes": "Fixture for applying uniform compression to short stacks.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      },
+      {
+        "name": "Price",
+        "display_value": "4500",
+        "number_value": 4500
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051071",
+    "name": "Gas Manifold System",
+    "notes": "Precision gas control manifold for testing stations.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      },
+      {
+        "name": "Price",
+        "display_value": "6000",
+        "number_value": 6000
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051072",
+    "name": "Anode Supported Cell (50mm)",
+    "notes": "50mm diameter ASC.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Cells"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Combustion"
+      },
+      {
+        "name": "Price",
+        "display_value": "45",
+        "number_value": 45
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051073",
+    "name": "Anode Supported Cell (25mm)",
+    "notes": "25mm diameter ASC button cell.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Cells"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Combustion"
+      },
+      {
+        "name": "Price",
+        "display_value": "35",
+        "number_value": 35
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051074",
+    "name": "Electrolyte Supported Cell (50mm)",
+    "notes": "50mm ESC, 150um thick electrolyte.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Cells"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrolyte"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Combustion"
+      },
+      {
+        "name": "Price",
+        "display_value": "50",
+        "number_value": 50
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051075",
+    "name": "Electrolyte Supported Cell (100mm)",
+    "notes": "100mm ESC, 150um thick electrolyte.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Cells"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrolyte"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Combustion"
+      },
+      {
+        "name": "Price",
+        "display_value": "80",
+        "number_value": 80
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051076",
+    "name": "Porous YSZ Substrate",
+    "notes": "Porous Yttria Stabilized Zirconia for cathode support.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Substrates"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrolyte"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Pellets"
+      },
+      {
+        "name": "Price",
+        "display_value": "30",
+        "number_value": 30
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051077",
+    "name": "Porous Alumina Substrate",
+    "notes": "High porosity alumina plates.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Substrates"
+      },
+      {
+        "name": "Applications",
+        "display_value": "Fuel Synthesis"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Pellets"
+      },
+      {
+        "name": "Price",
+        "display_value": "25",
+        "number_value": 25
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051078",
+    "name": "Dense YSZ Substrate",
+    "notes": "Fully dense YSZ plates.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Substrates"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrolyte"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Tape Casting"
+      },
+      {
+        "name": "Price",
+        "display_value": "40",
+        "number_value": 40
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051079",
+    "name": "Silver Ink",
+    "notes": "Ag ink for current collection.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      },
+      {
+        "name": "Price",
+        "display_value": "250",
+        "number_value": 250
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051080",
+    "name": "Silver-Palladium Ink",
+    "notes": "Ag-Pd alloy ink for higher temperature stability.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      },
+      {
+        "name": "Price",
+        "display_value": "350",
+        "number_value": 350
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051081",
+    "name": "Platinum Ink",
+    "notes": "Pt ink for reference electrodes.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      },
+      {
+        "name": "Price",
+        "display_value": "500",
+        "number_value": 500
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051082",
+    "name": "Gold Ink",
+    "notes": "Au ink for inert sealing/contact.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      },
+      {
+        "name": "Price",
+        "display_value": "600",
+        "number_value": 600
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051083",
+    "name": "Spinel Coating Powder",
+    "notes": "MnCo spinel powder for interconnect coating.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Barrier Layer"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Spraying"
+      },
+      {
+        "name": "Price",
+        "display_value": "135",
+        "number_value": 135
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051084",
+    "name": "Test Stand - Single Cell",
+    "notes": "Automated single cell test stand with flow control and load.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      },
+      {
+        "name": "Price",
+        "display_value": "45000",
+        "number_value": 45000
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051085",
+    "name": "Test Stand - Short Stack",
+    "notes": "Testing platform for short stacks up to 1kW.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      },
+      {
+        "name": "Price",
+        "display_value": "75000",
+        "number_value": 75000
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051086",
+    "name": "Furnace (1200C)",
+    "notes": "High temperature split tube furnace for testing.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      },
+      {
+        "name": "Price",
+        "display_value": "12000",
+        "number_value": 12000
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051087",
+    "name": "Gas Humidifier",
+    "notes": "Controlled humidification system for anode/cathode gases.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOEC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      },
+      {
+        "name": "Price",
+        "display_value": "3200",
+        "number_value": 3200
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051088",
+    "name": "Electronic Load (100A)",
+    "notes": "DC electronic load for cell characterization.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      },
+      {
+        "name": "Price",
+        "display_value": "2800",
+        "number_value": 2800
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051089",
+    "name": "Potentiostat / Galvanostat",
+    "notes": "High precision electrochemical workstation.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "Next-Gen Batteries"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      },
+      {
+        "name": "Price",
+        "display_value": "18000",
+        "number_value": 18000
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051090",
+    "name": "Crofer 22 APU Plate",
+    "notes": "Ferritic stainless steel specifically for SOFC interconnects.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Substrates"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      },
+      {
+        "name": "Price",
+        "display_value": "120",
+        "number_value": 120
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051091",
+    "name": "SDC-20 Ink",
+    "notes": "Samaria Doped Ceria ink for screen printing.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrolytes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrolyte"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOEC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051092",
+    "name": "GDC-10 Ink",
+    "notes": "Gadolinium Doped Ceria ink.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrolytes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrolyte"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOEC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051093",
+    "name": "YSZ-8Y Ink",
+    "notes": "Yttria Stabilized Zirconia ink.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrolytes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrolyte"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051094",
+    "name": "NiO-YSZ Anode Ink",
+    "notes": "Composite anode ink for SOFCs.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051095",
+    "name": "NiO-GDC Anode Ink",
+    "notes": "Composite anode ink for lower temp SOFCs.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051096",
+    "name": "LSCF-GDC Cathode Ink",
+    "notes": "Composite cathode ink.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051097",
+    "name": "LSM-YSZ Cathode Ink",
+    "notes": "Standard composite cathode ink.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051098",
+    "name": "Single Cell Test Fixture - 2024 Model",
+    "notes": "Updated fixture design.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051099",
+    "name": "Button Cell Sealing Paste",
+    "notes": "Ceramic paste for sealing button cells to tubes.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Barrier Layer"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051100",
+    "name": "Current Collector Mesh (Ni)",
+    "notes": "Nickel mesh for anode side current collection.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Balance of Stack"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051101",
+    "name": "Current Collector Mesh (Ag)",
+    "notes": "Silver mesh for cathode side.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Balance of Stack"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051102",
+    "name": "Current Collector Mesh (Pt)",
+    "notes": "Platinum mesh for high temp/corrosive environments.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Balance of Stack"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051103",
+    "name": "Alumina Tube (Small)",
+    "notes": "High purity alumina tube for button cell rig.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051104",
+    "name": "Alumina Tube (Large)",
+    "notes": "Larger diameter tube.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051105",
+    "name": "Thermocouple Type K",
+    "notes": "Standard thermocouple for test stands.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051106",
+    "name": "Thermocouple Type S",
+    "notes": "High temp thermocouple.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051107",
+    "name": "Mass Flow Controller (H2)",
+    "notes": "MFC calibrated for Hydrogen.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051108",
+    "name": "Mass Flow Controller (Air)",
+    "notes": "MFC for Air.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051109",
+    "name": "Mass Flow Controller (N2)",
+    "notes": "MFC for Nitrogen.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051110",
+    "name": "Mass Flow Controller (CH4)",
+    "notes": "MFC for Methane.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051111",
+    "name": "Bubble Humidifier Bottle",
+    "notes": "Simple humidifier component.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051112",
+    "name": "Heated Gas Line",
+    "notes": "Prevents condensation in gas lines.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051113",
+    "name": "Data Acquisition Unit",
+    "notes": "DAQ for logging voltage/current/temp.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051114",
+    "name": "Load Bank Resistor",
+    "notes": "Simple variable resistor for load testing.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051115",
+    "name": "EIS Analyzer Module",
+    "notes": "Add-on for impedance spectroscopy.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051116",
+    "name": "Reference Electrode Kit",
+    "notes": "Setup for 3-electrode measurements.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051117",
+    "name": "Lab Jack - Heavy Duty",
+    "notes": "Lifting platform for furnace alignment.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051118",
+    "name": "Ceramic Felt Insulation",
+    "notes": "High temp insulation material.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051119",
+    "name": "High Temp Adhesive",
+    "notes": "Ceramic adhesive for thermocouples.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051120",
+    "name": "Nickel Foam",
+    "notes": "Porous nickel for current collection/gas diffusion.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Balance of Stack"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051121",
+    "name": "Silver Mesh",
+    "notes": "Fine silver mesh.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Balance of Stack"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051122",
+    "name": "Gold Wire (0.5mm)",
+    "notes": "High purity gold wire for leads.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051123",
+    "name": "Platinum Wire (0.5mm)",
+    "notes": "High purity platinum wire.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051124",
+    "name": "Silver Wire (0.5mm)",
+    "notes": "Silver wire.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051125",
+    "name": "Mica Sheet Seals",
+    "notes": "Compressive gasket seals.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Balance of Stack"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Barrier Layer"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051126",
+    "name": "Thermiculite Seals",
+    "notes": "High temp vermiculite seals.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Balance of Stack"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Barrier Layer"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051127",
+    "name": "LSCF Cathode Powder (High Surface Area)",
+    "notes": "Optimized for ink making.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051128",
+    "name": "LSCF Cathode Powder (Coarse)",
+    "notes": "Coarser grade for porosity control.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051129",
+    "name": "LSM Cathode Powder (Standard)",
+    "notes": "Standard LSM powder.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051130",
+    "name": "NiO-YSZ Composite Powder (60:40)",
+    "notes": "Standard anode cermet mix.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Tape Casting"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051131",
+    "name": "NiO-YSZ Composite Powder (50:50)",
+    "notes": "Anode functional layer mix.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051132",
+    "name": "NiO-GDC Composite Powder",
+    "notes": "Anode for intermediate temp.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Electrodes"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrode"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051133",
+    "name": "Binder System B-73210",
+    "notes": "PVB based binder for tape casting.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Tape Casting"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051134",
+    "name": "Dispersant D-3005",
+    "notes": "Phosphate ester dispersant.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Tape Casting"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051135",
+    "name": "Plasticizer P-100",
+    "notes": "Standard plasticizer.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Tape Casting"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051136",
+    "name": "Solvent Blend S-1",
+    "notes": "Ethanol/MEK blend.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Tape Casting"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051137",
+    "name": "Ink Vehicle V-400",
+    "notes": "Terpineol based vehicle for screen printing.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051138",
+    "name": "Ink Vehicle V-500",
+    "notes": "Low viscosity vehicle.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051139",
+    "name": "Glass Powder G-100",
+    "notes": "Raw glass powder for sealant making.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Materials"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Barrier Layer"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Contact Paste"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051140",
+    "name": "3D Printer Filament - YSZ",
+    "notes": "Ceramic filled filament for FDM printing.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Materials"
+      },
+      {
+        "name": "Material Type",
+        "display_value": "Electrolyte"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051141",
+    "name": "Ball Mill Jar - Alumina",
+    "notes": "High purity alumina milling jar.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051142",
+    "name": "Milling Media - YSZ 5mm",
+    "notes": "YSZ grinding balls.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051143",
+    "name": "Milling Media - Alumina 10mm",
+    "notes": "Alumina grinding balls.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051144",
+    "name": "Sintering Tray - Alumina",
+    "notes": "High temp firing tray.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051145",
+    "name": "Sintering Tray - YSZ Coated",
+    "notes": "Non-reactive coating.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051146",
+    "name": "Setter Plate - Zirconia",
+    "notes": "Fully stabilized zirconia setter.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      },
+      {
+        "name": "Applications",
+        "display_value": "SOFC"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051147",
+    "name": "Screen Printing Mesh (325)",
+    "notes": "Stainless steel mesh for fine lines.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051148",
+    "name": "Screen Printing Mesh (200)",
+    "notes": "Standard mesh.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Screen Printing"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051149",
+    "name": "Tape Casting Doctor Blade",
+    "notes": "Adjustable height blade.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Tape Casting"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051150",
+    "name": "Mylar Carrier Film",
+    "notes": "PET film for tape casting.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Tape Casting"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051151",
+    "name": "Viscometer",
+    "notes": "For ink QC.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051152",
+    "name": "Grind Gauge",
+    "notes": "Fineness of grind gauge.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051153",
+    "name": "Particle Size Analyzer",
+    "notes": "Laser diffraction PSA.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051154",
+    "name": "Surface Area Analyzer (BET)",
+    "notes": "Gas adsorption analyzer.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051155",
+    "name": "Dilatometer",
+    "notes": "Thermal expansion measurement.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051156",
+    "name": "TGA/DSC",
+    "notes": "Thermal analysis.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051157",
+    "name": "X-Ray Diffraction (XRD)",
+    "notes": "Phase ID.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051158",
+    "name": "Scanning Electron Microscope (SEM)",
+    "notes": "Microstructure imaging.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051159",
+    "name": "Lab Balance (0.1mg)",
+    "notes": "Analytical balance.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051160",
+    "name": "Vacuum Oven",
+    "notes": "For drying powders/tapes.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051161",
+    "name": "Spin Coater",
+    "notes": "For thin film deposition.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051162",
+    "name": "Dip Coater",
+    "notes": "Automated dip coating unit.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051163",
+    "name": "Planetary Mill",
+    "notes": "High energy milling.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051164",
+    "name": "Sieve Shaker",
+    "notes": "Particle size separation.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051165",
+    "name": "Spray Pyrolysis Unit",
+    "notes": "Powder synthesis.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      },
+      {
+        "name": "Ways to Use",
+        "display_value": "Spraying"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051166",
+    "name": "Combustion Synthesis Reactor",
+    "notes": "Rapid powder synthesis.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051167",
+    "name": "Freeze Dryer",
+    "notes": "Lyophilization of precursors.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051168",
+    "name": "Calcination Furnace",
+    "notes": "Box furnace for powder processing.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051169",
+    "name": "Tube Furnace (1500C)",
+    "notes": "High temp sintering.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051170",
+    "name": "Gas Chromatograph",
+    "notes": "Gas analysis for reforming tests.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      },
+      {
+        "name": "Applications",
+        "display_value": "Reforming"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051171",
+    "name": "Mass Spectrometer",
+    "notes": "Real time gas analysis.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051172",
+    "name": "Humidity Sensor",
+    "notes": "Inline sensor.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051173",
+    "name": "Pressure Transducer",
+    "notes": "Gas pressure monitoring.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051174",
+    "name": "Back Pressure Regulator",
+    "notes": "Control system pressure.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051175",
+    "name": "Gas Mixing Station",
+    "notes": "Pre-mixed gas supply.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051176",
+    "name": "Safety Enclosure",
+    "notes": "Ventilated enclosure for test stands.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051177",
+    "name": "Hydrogen Generator",
+    "notes": "On-demand H2 supply.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051178",
+    "name": "Nitrogen Generator",
+    "notes": "N2 from air.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Testing Equipment"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051179",
+    "name": "Deionized Water System",
+    "notes": "High purity water for humidifiers.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "gid": "1212265003051180",
+    "name": "Ceramic Adhesive (High Strength)",
+    "notes": "Structural bonding.",
+    "custom_fields": [
+      {
+        "name": "Product Type",
+        "display_value": "Process Accessories"
+      }
+    ],
+    "tags": []
+  }
+]
         };
         // NOTE: For the live file, ensure you copy the FULL SAMPLE_DATA content I generated previously!
 
