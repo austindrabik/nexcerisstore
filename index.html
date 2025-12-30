@@ -59,7 +59,8 @@
                 secondary: "bg-gray-100 text-black hover:bg-gray-200",
                 outline: "border border-gray-300 text-black hover:border-black",
                 ghost: "text-black hover:bg-gray-100 px-4 py-2",
-                accent: "bg-[#00A555] text-white hover:bg-[#008a47]"
+                accent: "bg-[#00A555] text-white hover:bg-[#008a47]",
+                white: "bg-white text-black hover:bg-gray-100"
             };
             return (
                 <button onClick={onClick} className={`${baseStyle} ${variants[variant] || variants.primary} ${className}`} {...props}>
@@ -74,8 +75,8 @@
             </span>
         );
 
-        const FilterSection = ({ title, options, selectedOptions = [], onToggle }) => {
-            const [isOpen, setIsOpen] = useState(true);
+        const FilterSection = ({ title, options, selectedOptions = [], onToggle, defaultOpen = false }) => {
+            const [isOpen, setIsOpen] = useState(defaultOpen);
             return (
                 <div className="border-t border-gray-200 py-6">
                     <button className="flex w-full items-center justify-between text-left font-medium text-gray-900" onClick={() => setIsOpen(!isOpen)}>
@@ -3423,6 +3424,503 @@
             return `hsl(${hue}, 20%, 95%)`;
         };
 
+        // --- Product Page Component ---
+        const ProductPage = ({ product, addToCart, onBack, relatedProducts, onProductSelect }) => {
+            const [quantity, setQuantity] = useState(1);
+            const [activeTab, setActiveTab] = useState('specifications');
+
+            useEffect(() => {
+                // Scroll to top when product changes (if using the featured module)
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, [product]);
+
+            if (!product) return null;
+
+            const bgHelper = getProductImage(product);
+            const category = product.custom_fields?.find(f => f.name === 'Product Type')?.display_value || 'Product';
+            const price = product.custom_fields?.find(f => f.name === 'Price')?.number_value;
+
+            const handleAddToCart = () => {
+                addToCart({ ...product, quantity });
+                // Optional: Show feedback or just open cart
+            };
+
+            return (
+                <div className="animate-slide-in pb-20 bg-white min-h-screen w-full overflow-hidden">
+                    {/* Breadcrumb */}
+                    <div className="bg-gray-50 border-b border-gray-200">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                            <div className="flex items-center text-sm text-gray-500">
+                                <button onClick={() => onBack()} className="hover:text-[#00A555] transition-colors">Home</button>
+                                <ChevronDown className="w-3 h-3 mx-2 -rotate-90 text-gray-400" />
+                                <button onClick={() => onBack()} className="hover:text-[#00A555] transition-colors">Catalog</button>
+                                <ChevronDown className="w-3 h-3 mx-2 -rotate-90 text-gray-400" />
+                                <span className="text-gray-900 font-medium truncate max-w-[200px]">{product.name}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+                            {/* Left: Gallery */}
+                            <div className="space-y-6">
+                                <div className="aspect-square w-full rounded-3xl bg-gray-50 relative overflow-hidden border border-gray-100" style={{ backgroundColor: bgHelper }}>
+                                    <div className="absolute inset-0 flex items-center justify-center text-gray-500 select-none">
+                                        <span className="text-9xl font-black opacity-20">{product.name.substring(0,2).toUpperCase()}</span>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-4 gap-4">
+                                    {[...Array(4)].map((_, i) => (
+                                        <div key={i} className={`aspect-square rounded-xl bg-gray-50 border cursor-pointer transition-all ${i === 0 ? 'border-[#00A555] ring-2 ring-[#00A555] ring-offset-2' : 'border-gray-200 hover:border-gray-400'}`}></div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Right: Product Info */}
+                            <div>
+                                <div className="mb-4">
+                                    <span className="inline-block px-3 py-1 bg-green-50 text-[#00A555] font-bold tracking-wide uppercase text-xs rounded-full">{category}</span>
+                                </div>
+                                <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 leading-tight">{product.name}</h1>
+                                
+                                {/* Price & SKU */}
+                                <div className="flex flex-wrap items-center gap-6 mb-8 border-b border-gray-100 pb-8">
+                                    <div className="text-3xl font-bold text-gray-900">
+                                        {price ? `$${price.toLocaleString()}` : 'Contact for Price'}
+                                    </div>
+                                    <div className="hidden sm:block h-8 w-px bg-gray-200"></div>
+                                    <div className="text-sm text-gray-500">
+                                        <span className="block text-xs uppercase tracking-wider text-gray-400 font-semibold">SKU</span>
+                                        <span className="font-mono text-gray-700">{product.custom_fields?.find(f => f.name === 'SKU')?.display_value || 'N/A'}</span>
+                                    </div>
+                                </div>
+
+                                {/* Description Short - Added break-words to fix overflow */}
+                                <p className="text-lg text-gray-600 mb-8 leading-relaxed break-words break-all">
+                                    {product.notes && product.notes.length > 20 ? product.notes : "This high-performance material is engineered for advanced electrochemical applications, offering superior stability and conductivity for your research and production needs."}
+                                </p>
+
+                                {/* Add to Cart Form */}
+                                <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200 mb-8">
+                                    <div className="flex flex-col sm:flex-row gap-4">
+                                        <div className="w-full sm:w-32">
+                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Quantity</label>
+                                            <div className="flex items-center bg-white border border-gray-300 rounded-full h-12 px-4 shadow-sm hover:border-gray-400 transition-colors">
+                                                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="text-gray-400 hover:text-black font-bold p-1">-</button>
+                                                <input 
+                                                    type="number" 
+                                                    className="w-full text-center bg-transparent border-none focus:ring-0 font-bold text-gray-900 appearance-none" 
+                                                    value={quantity} 
+                                                    onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
+                                                />
+                                                <button onClick={() => setQuantity(quantity + 1)} className="text-gray-400 hover:text-black font-bold p-1">+</button>
+                                            </div>
+                                        </div>
+                                        <div className="flex-1">
+                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-2">&nbsp;</label>
+                                            <Button className="w-full h-12 text-lg shadow-lg shadow-green-900/10" onClick={handleAddToCart}>
+                                                Add to Cart
+                                            </Button>
+                                        </div>
+                                    </div>
+                                    <div className="mt-4 text-center sm:text-left">
+                                        <button className="text-sm text-gray-500 underline hover:text-[#00A555]">Request a bulk quote for orders over 100 units</button>
+                                    </div>
+                                </div>
+
+                                {/* Key Features List Mockup */}
+                                <ul className="space-y-3 mb-8">
+                                    {['High Purity Analysis > 99.9%', 'Custom Particle Size Distribution Available', 'Lot-to-Lot Consistency Guaranteed', 'Technical Data Sheet Included'].map((feat, i) => (
+                                        <li key={i} className="flex items-center gap-3 text-gray-700">
+                                            <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                                                <Check className="w-3 h-3 text-[#00A555]" />
+                                            </div>
+                                            {feat}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+
+                        {/* Tabs Section */}
+                        <div className="mt-20">
+                            <div className="border-b border-gray-200 mb-8">
+                                <div className="flex gap-8 overflow-x-auto">
+                                    {['Specifications', 'Description', 'Resources'].map((tab) => (
+                                        <button
+                                            key={tab}
+                                            onClick={() => setActiveTab(tab.toLowerCase())}
+                                            className={`pb-4 text-sm font-bold uppercase tracking-wider border-b-2 transition-colors whitespace-nowrap ${
+                                                activeTab === tab.toLowerCase() 
+                                                ? 'border-[#00A555] text-[#00A555]' 
+                                                : 'border-transparent text-gray-500 hover:text-gray-800'
+                                            }`}
+                                        >
+                                            {tab}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="min-h-[200px]">
+                                {activeTab === 'specifications' && (
+                                    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden max-w-3xl">
+                                        <table className="w-full text-left">
+                                            <thead className="bg-gray-50 border-b border-gray-100">
+                                                <tr>
+                                                    <th className="py-3 px-6 text-xs font-bold text-gray-500 uppercase tracking-wider">Attribute</th>
+                                                    <th className="py-3 px-6 text-xs font-bold text-gray-500 uppercase tracking-wider">Value</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-gray-100">
+                                                {product.custom_fields?.filter(f => f.display_value && f.name !== 'Price').map((field, i) => (
+                                                    <tr key={field.name} className="hover:bg-gray-50/50 transition-colors">
+                                                        <td className="py-4 px-6 font-medium text-gray-900 w-1/3">{field.name}</td>
+                                                        <td className="py-4 px-6 text-gray-600">{field.display_value}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                                {activeTab === 'description' && (
+                                    <div className="prose max-w-3xl text-gray-600 leading-relaxed">
+                                        <p className="mb-4">Nexceris {product.name} is manufactured using proprietary processes to ensure the highest quality and consistency for your research and development needs. Our team of materials scientists rigorously validates every batch to meet strict performance metrics.</p>
+                                        <p className="mb-4">Suitable for use in {product.custom_fields?.find(f=>f.name==='Applications')?.display_value || 'various energy applications'}, this product has been optimized for durability and efficiency.</p>
+                                        <h4 className="text-gray-900 font-bold mt-6 mb-2">Storage & Handling</h4>
+                                        <p>Store in a cool, dry place. Avoid exposure to moisture. Consult the Safety Data Sheet (SDS) before handling.</p>
+                                    </div>
+                                )}
+                                {activeTab === 'resources' && (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {['Technical Data Sheet (TDS)', 'Safety Data Sheet (SDS)', 'Application Note', 'Case Study: Efficiency Gains'].map((doc, i) => (
+                                            <div key={i} className="flex items-center p-4 border border-gray-200 rounded-xl hover:border-[#00A555] hover:bg-green-50/30 transition-all cursor-pointer group bg-white">
+                                                <div className="w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center mr-4 group-hover:bg-white group-hover:shadow-sm border border-gray-100 transition-all">
+                                                    <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                                </div>
+                                                <div>
+                                                    <span className="block font-medium text-gray-900 group-hover:text-[#00A555] transition-colors">{doc}</span>
+                                                    <span className="text-xs text-gray-400">PDF • 1.2 MB</span>
+                                                </div>
+                                                <ArrowRight className="w-4 h-4 ml-auto text-gray-300 group-hover:text-[#00A555] opacity-0 group-hover:opacity-100 transition-all" />
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Related Products Module */}
+                        {relatedProducts && relatedProducts.length > 0 && (
+                            <div className="mt-24 border-t border-gray-100 pt-16">
+                                <h2 className="text-2xl font-bold text-gray-900 mb-8">Related Products</h2>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                    {relatedProducts.map((fp) => {
+                                        const bgHelper = getProductImage(fp);
+                                        return (
+                                            <div key={fp.gid} className="group flex flex-col cursor-pointer" onClick={() => onProductSelect(fp)}>
+                                                <div className="aspect-[4/5] w-full relative overflow-hidden rounded-xl bg-gray-100 mb-4 border border-gray-100" style={{ backgroundColor: bgHelper }}>
+                                                    <div className="absolute inset-0 flex items-center justify-center text-gray-500 select-none">
+                                                        <span className="text-6xl font-black opacity-30">{fp.name.substring(0,2).toUpperCase()}</span>
+                                                    </div>
+                                                    <div className="absolute bottom-4 left-4 right-4 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                                                        <Button className="w-full shadow-lg bg-black text-white hover:bg-gray-800 border-transparent text-sm py-2" onClick={(e) => { e.stopPropagation(); onProductSelect(fp); }}>
+                                                            Select Options
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                                <div className="flex-1 flex flex-col gap-1">
+                                                    <h3 className="font-semibold text-gray-900 group-hover:text-[#00A555] transition-colors truncate" title={fp.name}>{fp.name}</h3>
+                                                    <p className="text-gray-500 text-sm">{fp.custom_fields?.find(f => f.name === 'Product Type')?.display_value}</p>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Custom Project Support Module */}
+                    <section className="px-4 sm:px-6 lg:px-8 pb-12">
+                        <div className="max-w-7xl mx-auto bg-[#1a1a1a] rounded-3xl overflow-hidden shadow-2xl relative">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-[#00A555] rounded-full filter blur-[100px] opacity-20 transform translate-x-1/2 -translate-y-1/2"></div>
+                            <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-600 rounded-full filter blur-[100px] opacity-20 transform -translate-x-1/2 translate-y-1/2"></div>
+                            
+                            <div className="relative z-10 py-20 px-8 text-center sm:px-16">
+                                <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">Custom Project Support</h2>
+                                <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-10">
+                                    Need large batch manufacturing, have a custom formulation, or support choosing a product? We’re here to help.
+                                </p>
+                                <Button variant="white" onClick={() => window.location.href='mailto:info@nexceris.com'} className="mx-auto text-lg px-8 py-4">
+                                    Talk to an Expert
+                                </Button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            );
+        };
+
+        // --- Home Page Component ---
+        const HomePage = ({ onNavigate, featuredProducts, onProductSelect }) => {
+            // ... existing HomePage code ...
+            // In the featured products map, change the button:
+            // onClick={() => onProductSelect(product)}
+            
+            const topCategories = [
+                { 
+                    name: "Catalysts", 
+                    filterCategory: "Product Type", 
+                    filterValue: "Catalysts", 
+                    image: "https://i0.wp.com/fuelcellmaterials.com/wp-content/uploads/Battery-Powders-Banner.jpg?resize=600%2C299&ssl=1" 
+                },
+                { 
+                    name: "Materials", 
+                    filterCategory: "Product Type", 
+                    filterValue: ["Electrolytes", "Electrodes"], 
+                    image: "https://i0.wp.com/fuelcellmaterials.com/wp-content/uploads/White-Powder-Banner-1.jpg?resize=600%2C300&ssl=1" 
+                },
+                { 
+                    name: "Components", 
+                    filterCategory: "Product Type", 
+                    filterValue: ["Substrates", "Cells", "Balance of Stack"], 
+                    image: "https://i0.wp.com/fuelcellmaterials.com/wp-content/uploads/Anode-Electrolyte-Button-Bi-Layer.jpg?resize=300%2C300&ssl=1" 
+                },
+                { 
+                    name: "Testing Equipment", 
+                    filterCategory: "Product Type", 
+                    filterValue: "Testing Equipment", 
+                    image: "https://i0.wp.com/fuelcellmaterials.com/wp-content/uploads/10-x-10-fixture.jpg?resize=300%2C300&ssl=1" 
+                }
+            ];
+
+            return (
+                <div className="flex flex-col w-full animate-slide-in">
+                    {/* Section 1: Hero */}
+                    <section className="relative py-32 px-4 sm:px-6 lg:px-8 text-center border-b border-gray-100 min-h-[600px] flex items-center bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&q=80')" }}>
+                        {/* Overlay: Shadow gradient from left to right */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/40"></div>
+                        
+                        <div className="relative z-10 max-w-7xl mx-auto w-full space-y-8">
+                            <div className="max-w-3xl mx-auto">
+                                <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white leading-[1.1] drop-shadow-sm">
+                                    Precision products that power clean energy innovation
+                                </h1>
+                                <p className="mt-6 text-xl text-gray-200 leading-relaxed drop-shadow-sm">
+                                    Trusted by Fortune 500 companies, U.S. National Laboratories, and startups for over 30 years.
+                                </p>
+                                <div className="pt-8 flex justify-center">
+                                    <Button onClick={() => onNavigate()} variant="accent" className="text-lg px-8 py-4 shadow-xl shadow-black/20">Explore Products</Button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Section 2: Featured Products Carousel */}
+                    <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full overflow-hidden">
+                        <div className="flex items-center justify-between mb-10">
+                            <h2 className="text-3xl font-bold text-gray-900">Featured Products</h2>
+                            <button onClick={() => onNavigate()} className="text-[#00A555] font-medium hover:underline flex items-center gap-1">
+                                View all <ArrowRight className="w-4 h-4"/>
+                            </button>
+                        </div>
+                        <div className="flex gap-6 overflow-x-auto pb-12 snap-x scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+                            {featuredProducts.map((product) => {
+                                const bgHelper = getProductImage(product);
+                                return (
+                                    <div key={product.gid} className="min-w-[280px] w-[280px] snap-center group flex flex-col">
+                                        <div className="aspect-[4/5] w-full relative overflow-hidden rounded-xl bg-gray-100 mb-4 border border-gray-100" style={{ backgroundColor: bgHelper }}>
+                                            <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
+                                                <Badge className="bg-white/90 shadow-sm">Featured</Badge>
+                                            </div>
+                                            <div className="absolute inset-0 flex items-center justify-center text-gray-500 select-none">
+                                                <span className="text-6xl font-black opacity-30">{product.name.substring(0,2).toUpperCase()}</span>
+                                            </div>
+                                            <div className="absolute bottom-4 left-4 right-4 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                                                <Button className="w-full shadow-lg bg-black text-white hover:bg-gray-800 border-transparent text-sm py-2" onClick={() => onProductSelect(product)}>
+                                                    Select Options
+                                                </Button>
+                                            </div>
+                                        </div>
+                                        <div className="flex-1 flex flex-col gap-1">
+                                            <h3 className="font-semibold text-gray-900 group-hover:text-[#00A555] transition-colors cursor-pointer truncate" title={product.name} onClick={() => onProductSelect(product)}>{product.name}</h3>
+                                            <p className="text-gray-500 text-sm">{product.custom_fields?.find(f => f.name === 'Product Type')?.display_value}</p>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </section>
+
+                    {/* Section 3: Shop by Top Categories */}
+                    <section className="bg-white py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full border-t border-gray-100">
+                        <h2 className="text-3xl font-bold text-gray-900 mb-12">Shop by Category</h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {topCategories.map((cat) => (
+                                <div 
+                                    key={cat.name} 
+                                    onClick={() => onNavigate({ [cat.filterCategory]: Array.isArray(cat.filterValue) ? cat.filterValue : [cat.filterValue] })}
+                                    className="group cursor-pointer rounded-2xl bg-gray-50 border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300"
+                                >
+                                    <div className="aspect-[4/3] w-full bg-gray-100 relative overflow-hidden">
+                                        <img src={cat.image} alt={cat.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                        <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                    </div>
+                                    <div className="p-6">
+                                        <h3 className="text-xl font-bold text-gray-900 group-hover:text-[#00A555] transition-colors">{cat.name}</h3>
+                                        <p className="text-gray-500 text-sm mt-2">Explore {cat.name} products</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* Section 4: Shop by Application (Organized) */}
+                    <section className="bg-[#00A555] py-24 px-4 sm:px-6 lg:px-8 border-t border-gray-200">
+                        <div className="max-w-7xl mx-auto">
+                            <h2 className="text-3xl font-bold text-white mb-12 text-center">Explore Applications</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                                {APPLICATIONS_MENU_DATA.map((category) => (
+                                    <div key={category.title} className="bg-white rounded-2xl p-6 shadow-xl border border-white/50 hover:shadow-2xl transition-all h-full flex flex-col">
+                                        <h3 className="font-bold text-lg text-gray-900 mb-6 pb-4 border-b border-gray-100 min-h-[4.5rem] flex items-center">{category.title}</h3>
+                                        <div className="flex-1 space-y-2">
+                                            {category.items.map((app) => (
+                                                <button 
+                                                    key={app}
+                                                    onClick={() => onNavigate({ 'Applications': [app] })}
+                                                    className="w-full text-left py-3 px-3 -mx-3 rounded-lg hover:bg-gray-50 text-gray-600 hover:text-black font-medium text-sm flex items-center justify-between group transition-all"
+                                                >
+                                                    {app}
+                                                    <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-[#00A555]" />
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Section 5: Why Nexceris */}
+                    <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+                        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-16">More than a store. Your custom development partner.</h2>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-16 relative">
+                            {[
+                                { value: "30+", suffix: "years of experience" },
+                                { value: "800+", suffix: "customers worldwide" },
+                                { value: "70", suffix: "countries served" },
+                                { value: "97%", suffix: "customer satisfaction" }
+                            ].map((stat, idx) => (
+                                <div key={idx} className="flex flex-col items-center">
+                                    <div className="text-4xl sm:text-5xl font-black text-[#00A555] mb-2">{stat.value}</div>
+                                    <div className="text-lg font-medium text-gray-900">{stat.suffix}</div>
+                                </div>
+                            ))}
+                        </div>
+                        <a href="#" className="inline-flex items-center text-lg font-semibold text-[#00A555] hover:text-[#008a47] hover:underline">
+                            Learn about our Lab to Launch capabilities <ArrowRight className="ml-2 w-5 h-5"/>
+                        </a>
+                    </section>
+
+                    {/* Section 6: Customer Support */}
+                    <section className="px-4 sm:px-6 lg:px-8 pb-20">
+                        <div className="max-w-7xl mx-auto bg-[#1a1a1a] rounded-3xl overflow-hidden shadow-2xl relative">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-[#00A555] rounded-full filter blur-[100px] opacity-20 transform translate-x-1/2 -translate-y-1/2"></div>
+                            <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-600 rounded-full filter blur-[100px] opacity-20 transform -translate-x-1/2 translate-y-1/2"></div>
+                            
+                            <div className="relative z-10 py-20 px-8 text-center sm:px-16">
+                                <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">Custom Project Support</h2>
+                                <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-10">
+                                    Need large batch manufacturing, have a custom formulation, or support choosing a product? We’re here to help.
+                                </p>
+                                <Button variant="white" onClick={() => window.location.href='mailto:info@nexceris.com'} className="mx-auto text-lg px-8 py-4">
+                                    Talk to an Expert
+                                </Button>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Footer */}
+                    <footer className="bg-[#141414] text-white py-16 border-t border-gray-800">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-12">
+                                <div>
+                                    <h4 className="text-white font-bold mb-6">Industries</h4>
+                                    <ul className="space-y-3 text-gray-400 text-sm">
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Sustainable Aviation Fuel</a></li>
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Hydrogen</a></li>
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Speciality Chemicals</a></li>
+                                        <li><button onClick={() => onNavigate({'Applications': ['SOFC', 'SOEC', 'PCFC']})} className="hover:text-[#00A555] transition-colors text-left">Fuel Cells & Electrolysis</button></li>
+                                        <li><button onClick={() => onNavigate({'Applications': ['Next-Gen Batteries', 'Metal-Air Batteries']})} className="hover:text-[#00A555] transition-colors text-left">Stationary Energy Storage</button></li>
+                                    </ul>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-white font-bold mb-6">Services</h4>
+                                    <ul className="space-y-3 text-gray-400 text-sm">
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Our Process</a></li>
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Our Technologies</a></li>
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Catalyst Development</a></li>
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Electrochemical Development</a></li>
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Pilot-Scale Manufacturing</a></li>
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Validation & Testing</a></li>
+                                    </ul>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-white font-bold mb-6">Resources</h4>
+                                    <ul className="space-y-3 text-gray-400 text-sm">
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Resource Library</a></li>
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Blog</a></li>
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Case Studies</a></li>
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Events & Webinars</a></li>
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Videos</a></li>
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Reports</a></li>
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Technical Overviews</a></li>
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">White Papers</a></li>
+                                    </ul>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-white font-bold mb-6">Company</h4>
+                                    <ul className="space-y-3 text-gray-400 text-sm">
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Why Nexceris</a></li>
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Partners</a></li>
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Newsroom</a></li>
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Careers</a></li>
+                                    </ul>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-white font-bold mb-6">Store & Support</h4>
+                                    <ul className="space-y-3 text-gray-400 text-sm">
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Sign In</a></li>
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Create Account</a></li>
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Purchasing & Shipping</a></li>
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Return Policy</a></li>
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">FAQs</a></li>
+                                        <li><a href="#" className="hover:text-[#00A555] transition-colors">Safety Data Sheets</a></li>
+                                        <li><a href="mailto:info@nexceris.com" className="hover:text-[#00A555] transition-colors">Customer Service</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                                <div className="flex flex-col md:flex-row items-center gap-6">
+                                    <img src="https://nexceris.com/wp-content/uploads/2025/12/Nexceris-blackgreen-PNG-scaled-e1766796516152.png" alt="Nexceris" className="h-6 w-auto brightness-0 invert" />
+                                    <p className="text-gray-500 text-sm">&copy; {new Date().getFullYear()} Nexceris, LLC. All rights reserved.</p>
+                                </div>
+                                <div className="flex gap-6 text-sm text-gray-500">
+                                    <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+                                    <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
         // --- Main App Component ---
         function App() {
             // ... (Copy the logic inside NexcerisStore from OneFile.jsx here) ...
@@ -3430,6 +3928,8 @@
             // And remove imports.
             
             const [products, setProducts] = useState(SAMPLE_DATA.data);
+            const [currentView, setCurrentView] = useState('home'); // 'home', 'catalog', 'product'
+            const [selectedProduct, setSelectedProduct] = useState(null);
             const [cart, setCart] = useState([]);
             const [isCartOpen, setIsCartOpen] = useState(false);
             const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
@@ -3437,16 +3937,57 @@
             const [activeFilters, setActiveFilters] = useState({});
             const [activeDropdown, setActiveDropdown] = useState(null);
             const dropdownRef = useRef(null);
+            const accountRef = useRef(null);
 
             useEffect(() => {
                 const handleClickOutside = (event) => {
-                    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                    const isOutsideNav = dropdownRef.current && !dropdownRef.current.contains(event.target);
+                    const isOutsideAccount = accountRef.current && !accountRef.current.contains(event.target);
+                    
+                    if (isOutsideNav && isOutsideAccount) {
                         setActiveDropdown(null);
                     }
                 };
                 document.addEventListener("mousedown", handleClickOutside);
                 return () => document.removeEventListener("mousedown", handleClickOutside);
             }, []);
+
+            // --- Navigation Helper ---
+            const navigateToCatalog = (filters = {}, search = '') => {
+                setActiveFilters(filters);
+                if (search) setSearchTerm(search);
+                setCurrentView('catalog');
+                setIsMobileFiltersOpen(false);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            const navigateToProduct = (product) => {
+                setSelectedProduct(product);
+                setCurrentView('product');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            const navigateBack = () => {
+                // If coming from home, go to home, else catalog. For simplicity, just catalog usually or previous view.
+                // Simple logic: if search/filter active, go catalog, else home?
+                // Or just simple: always go back to Catalog unless cleared.
+                if (Object.keys(activeFilters).length > 0 || searchTerm) {
+                    setCurrentView('catalog');
+                } else {
+                    setCurrentView('home');
+                }
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            const getRelatedProducts = (current, all) => {
+                if (!current) return [];
+                const type = current.custom_fields?.find(f => f.name === 'Product Type')?.display_value;
+                let related = all.filter(p => p.gid !== current.gid && p.custom_fields?.find(f => f.name === 'Product Type')?.display_value === type);
+                if (related.length < 4) {
+                    related = [...related, ...all.filter(p => p.gid !== current.gid && !related.includes(p))];
+                }
+                return related.slice(0, 4);
+            };
 
             const filteredProducts = useMemo(() => {
                 return products.filter(product => {
@@ -3482,18 +4023,20 @@
             };
 
             const applySingleFilter = (category, option) => {
-                setActiveFilters({ [category]: [option] });
+                // If we are on home page, navigate to catalog
+                navigateToCatalog({ [category]: [option] });
                 setActiveDropdown(null);
-                setSearchTerm('');
             };
 
             const addToCart = (product) => {
                 setCart(prev => {
                     const existing = prev.find(item => item.gid === product.gid);
                     if (existing) {
-                        return prev.map(item => item.gid === product.gid ? { ...item, quantity: item.quantity + 1 } : item);
+                        // If product page passes quantity, add that quantity. If not (from catalog), add 1.
+                        const qtyToAdd = product.quantity || 1;
+                        return prev.map(item => item.gid === product.gid ? { ...item, quantity: item.quantity + qtyToAdd } : item);
                     }
-                    return [...prev, { ...product, quantity: 1 }];
+                    return [...prev, { ...product, quantity: product.quantity || 1 }];
                 });
                 setIsCartOpen(true);
             };
@@ -3522,35 +4065,36 @@
                     </div>
 
                     {/* Navigation */}
-                    <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur shadow-sm border-b border-gray-100">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                            <div className="flex flex-col md:flex-row items-start justify-between gap-8">
-                                <div className="flex-shrink-0 h-10 flex items-center">
-                                    <a href="#">
+                    <nav className="sticky top-0 z-40 bg-white font-sans shadow-md">
+                        {/* Top Row: Logo, Links, Actions */}
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="flex items-center justify-between h-20">
+                                {/* Logo */}
+                                <div className="flex-shrink-0 flex items-center">
+                                    <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('home'); window.scrollTo(0,0); }}>
                                         <img src="https://nexceris.com/wp-content/uploads/2025/12/Nexceris-blackgreen-PNG-scaled-e1766796516152.png" alt="Nexceris" className="h-10 w-auto object-contain" />
                                     </a>
                                 </div>
 
-                                <div className="flex-1 w-full flex flex-col items-center gap-6" ref={dropdownRef}>
-                                    <div className="h-10 flex items-center gap-12 w-full justify-center relative">
-                                        <button onClick={() => setActiveDropdown(activeDropdown === 'Products' ? null : 'Products')} className={`text-base font-semibold transition-colors whitespace-nowrap flex items-center gap-1 ${activeDropdown === 'Products' ? 'text-[#00A555]' : 'text-gray-700 hover:text-[#00A555]'}`}>
+                                {/* Navigation Links */}
+                                <div className="hidden md:flex flex-1 items-center justify-center gap-8" ref={dropdownRef}>
+                                    
+                                    {/* Products Group */}
+                                    <div className="relative">
+                                        <button 
+                                            onClick={() => { setActiveDropdown(activeDropdown === 'Products' ? null : 'Products'); }} 
+                                            className={`text-base font-bold transition-colors whitespace-nowrap flex items-center gap-1 py-2 ${activeDropdown === 'Products' ? 'text-[#00A555]' : 'text-gray-800 hover:text-[#00A555]'}`}
+                                        >
                                             Products
                                             <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${activeDropdown === 'Products' ? 'rotate-180' : ''}`} />
                                         </button>
-                                        <button onClick={() => setActiveDropdown(activeDropdown === 'Applications' ? null : 'Applications')} className={`text-base font-semibold transition-colors whitespace-nowrap flex items-center gap-1 ${activeDropdown === 'Applications' ? 'text-[#00A555]' : 'text-gray-700 hover:text-[#00A555]'}`}>
-                                            Applications
-                                            <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${activeDropdown === 'Applications' ? 'rotate-180' : ''}`} />
-                                        </button>
-                                        {['Resources', 'Support'].map(item => (
-                                            <a key={item} href="#" className="text-base font-semibold text-gray-700 hover:text-[#00A555] transition-colors whitespace-nowrap">
-                                                {item}
-                                            </a>
-                                        ))}
-
-                                        {/* Products Dropdown */}
+                                        
                                         {activeDropdown === 'Products' && (
-                                            <div className="absolute top-full mt-4 left-1/2 -translate-x-1/2 w-[600px] bg-white rounded-xl shadow-xl border border-gray-100 p-6 z-50 animate-slide-in-down">
-                                                <div className="grid grid-cols-2 gap-x-8 gap-y-8">
+                                            <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-[600px] bg-white rounded-xl shadow-xl border border-gray-100 p-6 z-50 animate-slide-in-down">
+                                                {/* Arrow Pointer */}
+                                                <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t border-l border-gray-100 transform rotate-45"></div>
+                                                
+                                                <div className="grid grid-cols-2 gap-x-8 gap-y-8 relative z-10">
                                                     {PRODUCTS_MENU_DATA.map((section) => (
                                                         <div key={section.title}>
                                                             <h3 className="font-bold text-gray-900 mb-3 border-b border-gray-100 pb-2">{section.title}</h3>
@@ -3566,11 +4110,24 @@
                                                 </div>
                                             </div>
                                         )}
+                                    </div>
 
-                                        {/* Applications Dropdown */}
+                                    {/* Applications Group */}
+                                    <div className="relative">
+                                        <button 
+                                            onClick={() => { setActiveDropdown(activeDropdown === 'Applications' ? null : 'Applications'); }} 
+                                            className={`text-base font-bold transition-colors whitespace-nowrap flex items-center gap-1 py-2 ${activeDropdown === 'Applications' ? 'text-[#00A555]' : 'text-gray-800 hover:text-[#00A555]'}`}
+                                        >
+                                            Applications
+                                            <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${activeDropdown === 'Applications' ? 'rotate-180' : ''}`} />
+                                        </button>
+
                                         {activeDropdown === 'Applications' && (
-                                            <div className="absolute top-full mt-4 left-1/2 -translate-x-1/2 w-[600px] bg-white rounded-xl shadow-xl border border-gray-100 p-6 z-50 animate-slide-in-down">
-                                                <div className="grid grid-cols-2 gap-x-8 gap-y-8">
+                                            <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-[600px] bg-white rounded-xl shadow-xl border border-gray-100 p-6 z-50 animate-slide-in-down">
+                                                {/* Arrow Pointer */}
+                                                <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t border-l border-gray-100 transform rotate-45"></div>
+
+                                                <div className="grid grid-cols-2 gap-x-8 gap-y-8 relative z-10">
                                                     {APPLICATIONS_MENU_DATA.map((section) => (
                                                         <div key={section.title}>
                                                             <h3 className="font-bold text-gray-900 mb-3 border-b border-gray-100 pb-2">{section.title}</h3>
@@ -3588,19 +4145,116 @@
                                         )}
                                     </div>
 
-                                    <div className="relative w-full max-w-2xl group">
-                                        <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                                            <Search className="h-5 w-5 text-gray-400 group-focus-within:text-[#00A555] transition-colors" />
-                                        </div>
-                                        <input type="text" placeholder="Search materials, equipment, and cells..." className="block w-full pl-12 pr-4 py-3.5 rounded-full bg-white border border-gray-200 text-base text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#00A555] focus:ring-1 focus:ring-[#00A555] transition-all shadow-sm" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                                    {/* Resources Group */}
+                                    <div className="relative">
+                                        <button 
+                                            onClick={() => { setActiveDropdown(activeDropdown === 'Resources' ? null : 'Resources'); }} 
+                                            className={`text-base font-bold transition-colors whitespace-nowrap flex items-center gap-1 py-2 ${activeDropdown === 'Resources' ? 'text-[#00A555]' : 'text-gray-800 hover:text-[#00A555]'}`}
+                                        >
+                                            Resources
+                                            <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${activeDropdown === 'Resources' ? 'rotate-180' : ''}`} />
+                                        </button>
+
+                                        {activeDropdown === 'Resources' && (
+                                            <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-[600px] bg-white rounded-xl shadow-xl border border-gray-100 p-6 z-50 animate-slide-in-down">
+                                                {/* Arrow Pointer */}
+                                                <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t border-l border-gray-100 transform rotate-45"></div>
+
+                                                <div className="grid grid-cols-2 gap-6 relative z-10">
+                                                    {/* Column 1: Resource Library Standalone */}
+                                                    <div className="col-span-1">
+                                                        <button className="flex flex-col h-full w-full justify-between p-5 rounded-xl bg-gray-50 hover:bg-green-50/50 border border-transparent hover:border-green-100 transition-all text-left group">
+                                                            <div>
+                                                                <div className="w-10 h-10 bg-white rounded-lg shadow-sm flex items-center justify-center mb-4 text-[#00A555]">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                                                                </div>
+                                                                <h3 className="font-bold text-gray-900 text-lg group-hover:text-[#00A555] transition-colors mb-2">Resource Library</h3>
+                                                                <p className="text-xs text-gray-500 leading-relaxed">Access datasheets, guides, technical documentation, and comprehensive material data.</p>
+                                                            </div>
+                                                            <span className="text-[#00A555] font-bold text-xs flex items-center mt-4">
+                                                                View All <ArrowRight className="w-3 h-3 ml-1 transition-transform group-hover:translate-x-1" />
+                                                            </span>
+                                                        </button>
+                                                    </div>
+                                                    
+                                                    {/* Column 2: Other Links */}
+                                                    <div className="col-span-1 flex flex-col justify-center gap-1">
+                                                        <h3 className="font-bold text-gray-900 mb-3 px-3 text-sm border-b border-gray-100 pb-2">Discover</h3>
+                                                        {[
+                                                            "Blog",
+                                                            "Case Studies",
+                                                            "Events & Webinars",
+                                                            "Videos",
+                                                            "Technical Overviews",
+                                                            "White Papers"
+                                                        ].map((item) => (
+                                                            <button key={item} className="text-sm text-gray-600 hover:text-[#00A555] hover:bg-gray-50 px-3 py-2 rounded-lg transition-all text-left font-medium w-full flex items-center justify-between group">
+                                                                {item}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Support Group */}
+                                    <div className="relative">
+                                        <button 
+                                            onClick={() => { setActiveDropdown(activeDropdown === 'Support' ? null : 'Support'); }} 
+                                            className={`text-base font-bold transition-colors whitespace-nowrap flex items-center gap-1 py-2 ${activeDropdown === 'Support' ? 'text-[#00A555]' : 'text-gray-800 hover:text-[#00A555]'}`}
+                                        >
+                                            Support
+                                            <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${activeDropdown === 'Support' ? 'rotate-180' : ''}`} />
+                                        </button>
+
+                                        {activeDropdown === 'Support' && (
+                                            <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-[300px] bg-white rounded-xl shadow-xl border border-gray-100 p-6 z-50 animate-slide-in-down">
+                                                {/* Arrow Pointer */}
+                                                <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t border-l border-gray-100 transform rotate-45"></div>
+
+                                                <div className="flex flex-col items-start gap-3 relative z-10">
+                                                    {[
+                                                        "Customer Service",
+                                                        "Purchasing & Shipping",
+                                                        "Return Policy",
+                                                        "Safety Data Sheets"
+                                                    ].map((item) => (
+                                                        <button key={item} className="text-sm text-gray-600 hover:text-[#00A555] hover:pl-1 transition-all text-left font-medium w-full">
+                                                            {item}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-4 flex-shrink-0 h-10">
-                                    <a href="#" className="hidden md:flex items-center gap-2 bg-[#00A555] text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-[#008a47] transition-all shadow-sm active:scale-95">
-                                        <User className="w-4 h-4" />
-                                        <span>My Account</span>
-                                    </a>
+                                {/* Right Actions */}
+                                <div className="flex items-center gap-4 flex-shrink-0" ref={accountRef}>
+                                    <div className="relative">
+                                        <button 
+                                            onClick={() => setActiveDropdown(activeDropdown === 'Account' ? null : 'Account')}
+                                            className={`hidden md:flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all shadow-sm active:scale-95 ${activeDropdown === 'Account' ? 'bg-[#d9af7f] text-gray-900' : 'bg-[#F2C38D] text-gray-900 hover:bg-[#d9af7f]'}`}
+                                        >
+                                            <User className="w-4 h-4" />
+                                            <span>My Account</span>
+                                            <ChevronDown className={`w-3 h-3 ml-1 transition-transform duration-200 ${activeDropdown === 'Account' ? 'rotate-180' : ''}`} />
+                                        </button>
+
+                                        {activeDropdown === 'Account' && (
+                                            <div className="absolute top-full right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 animate-slide-in-down overflow-hidden">
+                                                <div className="flex flex-col">
+                                                    {['Sign In', 'Create Account', 'Order Lookup'].map((item) => (
+                                                        <button key={item} className="text-left px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-[#00A555] transition-colors w-full">
+                                                            {item}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
                                     <button className="group p-2.5 hover:bg-gray-100 rounded-full relative transition-colors" onClick={() => setIsCartOpen(true)}>
                                         <ShoppingCart className="h-6 w-6 text-gray-600 group-hover:text-[#00A555] transition-colors" />
                                         {cart.length > 0 && (
@@ -3614,97 +4268,158 @@
                         </div>
                     </nav>
 
-                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-4 border-b border-gray-100">
-                            <div>
-                                <h1 className="text-3xl font-bold tracking-tight text-gray-900">Product Catalog</h1>
-                                <div className="mt-2 text-gray-500 flex items-center gap-2">
-                                    {Object.entries(activeFilters).length > 0 ? (
-                                        <>
-                                            <span>Filtered by:</span>
-                                            {Object.entries(activeFilters).map(([key, values]) => (
-                                                <span key={key} className="inline-flex items-center gap-1 px-2 py-1 rounded bg-green-50 text-[#00A555] text-xs font-medium border border-green-100">
-                                                    {values.join(', ')}
-                                                    <button onClick={() => toggleFilter(key, values[0])} className="hover:text-green-800"><X className="w-3 h-3"/></button>
-                                                </span>
-                                            ))}
-                                            <button onClick={() => setActiveFilters({})} className="text-xs underline hover:text-black ml-2">Clear all</button>
-                                        </>
+                    {/* Bottom Row: Search Bar Area */}
+                    {/* Render search bar only when NOT in product view to simplify? Or keep it. Let's keep it. */}
+                    <div className="bg-[#00A555] py-3 shadow-inner">
+                        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="relative group">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <Search className="h-5 w-5 text-gray-400 group-focus-within:text-[#00A555] transition-colors" />
+                                </div>
+                                <input 
+                                    type="text" 
+                                    placeholder="Search materials, equipment, and cells..." 
+                                    className="block w-full pl-11 pr-4 py-3 rounded-full bg-white border-none text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/50 shadow-sm" 
+                                    value={searchTerm} 
+                                    onChange={(e) => setSearchTerm(e.target.value)} 
+                                    onKeyDown={(e) => {
+                                        if(e.key === 'Enter') {
+                                            navigateToCatalog({}, searchTerm);
+                                        }
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {currentView === 'home' ? (
+                        <HomePage 
+                            onNavigate={navigateToCatalog} 
+                            featuredProducts={products.slice(0, 6)} 
+                            onProductSelect={navigateToProduct}
+                            addToCart={addToCart} 
+                        />
+                    ) : currentView === 'product' ? (
+                        <ProductPage 
+                            product={selectedProduct} 
+                            addToCart={addToCart}
+                            onBack={navigateBack}
+                            relatedProducts={getRelatedProducts(selectedProduct, products)}
+                            onProductSelect={navigateToProduct}
+                        />
+                    ) : (
+                        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-slide-in">
+                            {/* Lab to Launch Promo Card */}
+                            <div className="w-full bg-[#1a1a1a] text-white rounded-2xl p-8 mb-10 flex flex-col md:flex-row items-center justify-between shadow-xl relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-[#00A555] rounded-full filter blur-[80px] opacity-20 transform translate-x-1/2 -translate-y-1/2 transition-opacity group-hover:opacity-30"></div>
+                                <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-900 rounded-full filter blur-[60px] opacity-20 transform -translate-x-1/2 translate-y-1/2"></div>
+                                
+                                <div className="relative z-10 mb-6 md:mb-0 text-center md:text-left max-w-2xl">
+                                    <h2 className="text-2xl md:text-3xl font-bold mb-2">Explore our Lab to Launch process</h2>
+                                    <p className="text-gray-300 text-lg">Accelerating innovation from materials research to commercial manufacturing.</p>
+                                </div>
+                                <div className="relative z-10 flex-shrink-0">
+                                    <Button variant="accent" className="px-8 shadow-lg shadow-green-900/20">Learn More</Button>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-4 border-b border-gray-100">
+                                <div>
+                                    <h1 className="text-3xl font-bold tracking-tight text-gray-900">Product Catalog</h1>
+                                    <div className="mt-2 text-gray-500 flex items-center gap-2">
+                                        {Object.entries(activeFilters).length > 0 ? (
+                                            <>
+                                                <span>Filtered by:</span>
+                                                {Object.entries(activeFilters).map(([key, values]) => (
+                                                    <span key={key} className="inline-flex items-center gap-1 px-2 py-1 rounded bg-green-50 text-[#00A555] text-xs font-medium border border-green-100">
+                                                        {values.join(', ')}
+                                                        <button onClick={() => toggleFilter(key, values[0])} className="hover:text-green-800"><X className="w-3 h-3"/></button>
+                                                    </span>
+                                                ))}
+                                                <button onClick={() => setActiveFilters({})} className="text-xs underline hover:text-black ml-2">Clear all</button>
+                                            </>
+                                        ) : (
+                                            `Showing ${filteredProducts.length} results`
+                                        )}
+                                    </div>
+                                </div>
+                                <button className="md:hidden mt-4 flex items-center gap-2 text-sm font-medium border border-gray-300 rounded-full px-4 py-2" onClick={() => setIsMobileFiltersOpen(true)}>
+                                    <Filter className="h-4 w-4" />
+                                    Filter & Sort
+                                </button>
+                            </div>
+
+                            <div className="flex gap-x-8">
+                                <div className="hidden md:block w-64 flex-shrink-0">
+                                    <div className="sticky top-40 max-h-[calc(100vh-10rem)] overflow-y-auto pr-4 scrollbar-hide">
+                                        <div className="flex items-center justify-between pb-4">
+                                            <h2 className="text-lg font-bold text-gray-900">Filters</h2>
+                                            {Object.keys(activeFilters).length > 0 && (
+                                                <button onClick={() => setActiveFilters({})} className="text-xs text-gray-500 underline hover:text-[#00A555]">
+                                                    Reset
+                                                </button>
+                                            )}
+                                        </div>
+                                        {HARDCODED_FILTERS.map((filter) => (
+                                            <FilterSection 
+                                                key={filter.name} 
+                                                title={filter.name} 
+                                                options={filter.options} 
+                                                selectedOptions={activeFilters[filter.name] || []} 
+                                                onToggle={toggleFilter} 
+                                                defaultOpen={filter.name === "Product Type"}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="flex-1">
+                                    {filteredProducts.length > 0 ? (
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-10 gap-x-6">
+                                            {filteredProducts.map((product) => {
+                                                const bgHelper = getProductImage(product);
+                                                const categoryField = product.custom_fields?.find(f => f.name === 'Product Type') || product.custom_fields?.find(f => f.name === 'Category');
+                                                return (
+                                                    <div key={product.gid} className="group flex flex-col">
+                                                        <div className="aspect-[4/5] w-full relative overflow-hidden rounded-xl bg-gray-100 mb-4 border border-gray-100" style={{ backgroundColor: bgHelper }}>
+                                                            <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
+                                                                {product.tags?.map(tag => (
+                                                                    <Badge key={tag.name} className="bg-white/90 shadow-sm backdrop-blur border border-gray-100">{tag.name}</Badge>
+                                                                ))}
+                                                            </div>
+                                                            <div className="absolute inset-0 flex items-center justify-center text-gray-500 select-none">
+                                                                <span className="text-8xl font-black opacity-30">{product.name.substring(0,2).toUpperCase()}</span>
+                                                            </div>
+                                                            <div className="absolute bottom-4 left-4 right-4 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                                                                <Button className="w-full shadow-lg bg-black text-white hover:bg-gray-800 border-transparent" onClick={() => navigateToProduct(product)}>
+                                                                    Select Options
+                                                                </Button>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex-1 flex flex-col gap-1">
+                                                            {categoryField && (
+                                                                <span className="text-xs font-bold text-[#00A555] uppercase tracking-wide">{categoryField.display_value}</span>
+                                                            )}
+                                                            <h3 className="font-semibold text-lg text-gray-900 group-hover:text-[#00A555] transition-colors cursor-pointer" onClick={() => navigateToProduct(product)}>{product.name}</h3>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
                                     ) : (
-                                        `Showing ${filteredProducts.length} results`
+                                        <div className="flex flex-col items-center justify-center py-20 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+                                            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm">
+                                                <Search className="w-8 h-8 text-gray-300" />
+                                            </div>
+                                            <h3 className="text-xl font-bold text-gray-900">No products found</h3>
+                                            <p className="text-gray-500 max-w-sm mt-2 mb-6">We couldn't find any matches for "{searchTerm}". Try checking your spelling or using different keywords.</p>
+                                            <Button variant="secondary" onClick={() => { setSearchTerm(''); setActiveFilters({}); }}>Clear All Filters</Button>
+                                        </div>
                                     )}
                                 </div>
                             </div>
-                            <button className="md:hidden mt-4 flex items-center gap-2 text-sm font-medium border border-gray-300 rounded-full px-4 py-2" onClick={() => setIsMobileFiltersOpen(true)}>
-                                <Filter className="h-4 w-4" />
-                                Filter & Sort
-                            </button>
-                        </div>
-
-                        <div className="flex gap-x-8">
-                            <div className="hidden md:block w-64 flex-shrink-0">
-                                <div className="sticky top-40 max-h-[calc(100vh-10rem)] overflow-y-auto pr-4 scrollbar-hide">
-                                    <div className="flex items-center justify-between pb-4">
-                                        <h2 className="text-lg font-bold text-gray-900">Filters</h2>
-                                        {Object.keys(activeFilters).length > 0 && (
-                                            <button onClick={() => setActiveFilters({})} className="text-xs text-gray-500 underline hover:text-[#00A555]">
-                                                Reset
-                                            </button>
-                                        )}
-                                    </div>
-                                    {HARDCODED_FILTERS.map((filter) => (
-                                        <FilterSection key={filter.name} title={filter.name} options={filter.options} selectedOptions={activeFilters[filter.name] || []} onToggle={toggleFilter} />
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="flex-1">
-                                {filteredProducts.length > 0 ? (
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-10 gap-x-6">
-                                        {filteredProducts.map((product) => {
-                                            const bgHelper = getProductImage(product);
-                                            const categoryField = product.custom_fields?.find(f => f.name === 'Product Type') || product.custom_fields?.find(f => f.name === 'Category');
-                                            return (
-                                                <div key={product.gid} className="group flex flex-col">
-                                                    <div className="aspect-[4/5] w-full relative overflow-hidden rounded-xl bg-gray-100 mb-4 border border-gray-100" style={{ backgroundColor: bgHelper }}>
-                                                        <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
-                                                            {product.tags?.map(tag => (
-                                                                <Badge key={tag.name} className="bg-white/90 shadow-sm backdrop-blur border border-gray-100">{tag.name}</Badge>
-                                                            ))}
-                                                        </div>
-                                                        <div className="absolute inset-0 flex items-center justify-center text-gray-500 select-none">
-                                                            <span className="text-8xl font-black opacity-30">{product.name.substring(0,2).toUpperCase()}</span>
-                                                        </div>
-                                                        <div className="absolute bottom-4 left-4 right-4 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                                                            <Button className="w-full shadow-lg bg-black text-white hover:bg-gray-800 border-transparent" onClick={() => addToCart(product)}>
-                                                                Select Options
-                                                            </Button>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex-1 flex flex-col gap-1">
-                                                        {categoryField && (
-                                                            <span className="text-xs font-bold text-[#00A555] uppercase tracking-wide">{categoryField.display_value}</span>
-                                                        )}
-                                                        <h3 className="font-semibold text-lg text-gray-900 group-hover:text-[#00A555] transition-colors cursor-pointer">{product.name}</h3>
-                                                        <p className="text-gray-500 text-sm line-clamp-2 mb-3 h-10 leading-relaxed">{product.notes || "No description available."}</p>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                ) : (
-                                    <div className="flex flex-col items-center justify-center py-20 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
-                                        <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm">
-                                            <Search className="w-8 h-8 text-gray-300" />
-                                        </div>
-                                        <h3 className="text-xl font-bold text-gray-900">No products found</h3>
-                                        <p className="text-gray-500 max-w-sm mt-2 mb-6">We couldn't find any matches for "{searchTerm}". Try checking your spelling or using different keywords.</p>
-                                        <Button variant="secondary" onClick={() => { setSearchTerm(''); setActiveFilters({}); }}>Clear All Filters</Button>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </main>
+                        </main>
+                    )}
 
                     {/* Cart Drawer & Mobile Filters (Simplified for single file) */}
                     {/* ... (Cart Logic same as before, just render if isOpen) ... */}
